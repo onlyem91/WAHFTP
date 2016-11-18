@@ -1,6 +1,8 @@
 package nl.hackergames.pizza.server.controller;
 
 import nl.hackergames.pizza.common.ResponseMessage;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -92,12 +94,14 @@ public class WelcomeController {
                 h1("WELCOME TO OUR PRITTY DEMO!").withClass("example")
         ).render();
 
+        Document doc = Jsoup.parseBodyFragment(html);
+
         try{
             File file = new File("index.html");
             FileOutputStream fop = new FileOutputStream(file);
 
             // get the content in bytes
-            byte[] contentInBytes = html.getBytes();
+            byte[] contentInBytes = doc.html().getBytes();
 
             fop.write(contentInBytes);
             fop.flush();
@@ -108,7 +112,7 @@ public class WelcomeController {
             return new ResponseMessage("Error creating HTML page", 500);
         }
 
-        return new ResponseMessage("Succesfully created HTML file.", 201);
+        return new ResponseMessage("Successfully created HTML file.", 201);
     }
 
     private void changeColorOfHeader(String objectColor){
