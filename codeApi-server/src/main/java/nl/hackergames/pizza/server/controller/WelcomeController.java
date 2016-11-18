@@ -90,7 +90,7 @@ public class WelcomeController {
 
         String html = body().with(
                 h1("WELCOME TO OUR PRITTY DEMO!").withClass("example")
-        ).render().;
+        ).render();
 
         try{
             File file = new File("index.html");
