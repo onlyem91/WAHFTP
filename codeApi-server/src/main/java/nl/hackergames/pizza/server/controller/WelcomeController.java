@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.PrintWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.h1;
@@ -92,14 +93,22 @@ public class WelcomeController {
         ).render();
 
         try{
-            PrintWriter out = new PrintWriter( "index.html" );
-            out.println(html);
+            File file = new File("index.html");
+            FileOutputStream fop = new FileOutputStream(file);
+
+            // get the content in bytes
+            byte[] contentInBytes = html.getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+
 
         }catch(Exception e){
             return new ResponseMessage("Error creating HTML page", 500);
         }
 
-        return new ResponseMessage(html, 201);
+        return new ResponseMessage("Succesfully created HTML file.", 201);
     }
 
     private void changeColorOfHeader(String objectColor){
