@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-
 import static j2html.TagCreator.*;
 
 /**
@@ -34,7 +33,6 @@ public class WelcomeController {
     private ContainerTag body = body();
 
     private ContainerTag document = html().with(head, body);
-
     private HashMap<Integer, ContainerTag> elements = new HashMap<>();
 
     @RequestMapping("/json")
@@ -81,7 +79,20 @@ public class WelcomeController {
                 content
         );
 
-        Document doc = Jsoup.parse(document.render());
+        head.with(
+            title("Pretty App"),
+            script().withSrc("http://livejs.com/live.js").withType("text/javascript"),
+            link().withRel("stylesheet").withHref("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+        );
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully created HTML file.", 201);
+    }
+
+    private boolean updateFile(){
+        Document doc = Jsoup.parse(renderHtml());
 
         try{
             File file = new File("index.html");
@@ -94,12 +105,76 @@ public class WelcomeController {
             fop.flush();
             fop.close();
 
+            return true;
 
         }catch(Exception e){
-            return new ResponseMessage("Error creating HTML page", 500);
+            return false;
         }
 
-        return new ResponseMessage("Successfully created HTML file.", 201);
+    }
+
+    @RequestMapping("/addNavItem")
+    private @ResponseBody ResponseMessage addNavItem (String name, String url, String active) {
+
+        String liClass = "";
+
+        if(active.equals("true")){
+            liClass = "active";
+        }
+
+        elements.get(1).with(
+            li().with(
+                a().withHref(url).withText(name)
+            ).withClass(liClass)
+        );
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully updated HTML file.", 201);
+
+    }
+
+
+    @RequestMapping("/moveNavbar")
+    private @ResponseBody ResponseMessage moveNavbar (String position) {
+
+        elements.get(0).withClass("navbar navbar-default navbar-fixed-top");
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully updated HTML file.", 201);
+
+    }
+
+    @RequestMapping("/addNavbar")
+    private @ResponseBody ResponseMessage addNavbar (){
+        ContainerTag ul = ul().withClass("nav navbar-nav");
+
+        ContainerTag nav = nav().with(
+            div().withClass("container").with(
+                div().with(
+                    ul
+                ).withClass("collapse navbar-collapse")
+            )
+        ).withClass("navbar navbar-default");
+
+        body.with(
+            nav
+        );
+
+        elements.put(0, nav);
+        elements.put(1, ul);
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully updated HTML file.", 201);
+    }
+
+    private String renderHtml(){
+        return document.render();
     }
 
 }

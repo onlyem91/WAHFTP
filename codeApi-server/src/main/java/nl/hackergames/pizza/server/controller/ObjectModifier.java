@@ -31,8 +31,6 @@ public class ObjectModifier {
             //set header with new value
             objectTag.attr("style", "color:"+value+";");
 
-            document.with(head, body);
-
             Document doc = Jsoup.parse(document.render());
 
             try{
