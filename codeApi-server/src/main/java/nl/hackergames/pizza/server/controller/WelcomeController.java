@@ -1,9 +1,8 @@
 package nl.hackergames.pizza.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import j2html.tags.ContainerTag;
 import nl.hackergames.pizza.common.ResponseMessage;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.h1;
+import static j2html.TagCreator.*;
 /**
  * SpringMVC Controller that lives on the server side and handles incoming HTTP requests. It is basically a servlet but
  * using the power of SpringMVC we can avoid a lot of the raw servlet and request/response mapping uglies that
@@ -29,6 +28,11 @@ import static j2html.TagCreator.h1;
 public class WelcomeController {
 
     private static final Logger log = LoggerFactory.getLogger(WelcomeController.class);
+
+    private ContainerTag head = head();
+    private ContainerTag body = body();
+    private ContainerTag document = html().with(head, body);
+    private HashMap<Integer, ContainerTag> elements = new HashMap<Integer, ContainerTag>();
 
     private enum htmlObjects {
         header, footer;
@@ -105,37 +109,25 @@ public class WelcomeController {
     @RequestMapping("/init")
     public @ResponseBody ResponseMessage init(){
 
-        String html = body().with(
-                h1("WELCOME TO OU DEMO!").withClass("example")
-        ).render();
+        head.with(
+            title("Pretty App"),
+            link().withRel("stylesheet").withHref("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
+        );
 
-        Document doc = Jsoup.parseBodyFragment(html);
+        body.with(
+            div().with(
+                h1("Welcome to our pretty app!")
+            ).withClass("page-header")
+        );
 
-        try{
-            File file = new File("index.html");
-            FileOutputStream fop = new FileOutputStream(file);
-
-            // get the content in bytes
-            byte[] contentInBytes = doc.html().getBytes();
-
-            fop.write(contentInBytes);
-            fop.flush();
-            fop.close();
-
-
-        }catch(Exception e){
+        if (!updateFile())
             return new ResponseMessage("Error creating HTML page", 500);
-        }
 
         return new ResponseMessage("Successfully created HTML file.", 201);
     }
 
-    private void changeColorOfHeader(String objectColor){
-        String html = body().with(
-                h1(objectColor).attr("style", "color:"+objectColor+";").withClass("example")
-        ).render();
-
-        Document doc = Jsoup.parseBodyFragment(html);
+    private boolean updateFile(){
+        Document doc = Jsoup.parse(renderHtml());
 
         try{
             File file = new File("index.html");
@@ -148,10 +140,84 @@ public class WelcomeController {
             fop.flush();
             fop.close();
 
+            return true;
 
         }catch(Exception e){
-
+            return false;
         }
+
+    }
+
+    @RequestMapping("/addNavItem")
+    private @ResponseBody ResponseMessage addNavItem (String name, String url, String active) {
+
+        String liClass = "";
+
+        if(active.equals("true")){
+            liClass = "active";
+        }
+
+        elements.get(1).with(
+            li().with(
+                a().withHref(url).withText(name)
+            ).withClass(liClass)
+        );
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully updated HTML file.", 201);
+
+    }
+
+
+    @RequestMapping("/moveNavbar")
+    private @ResponseBody ResponseMessage moveNavbar (String position) {
+
+        elements.get(0).withClass("navbar navbar-default navbar-fixed-top");
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully updated HTML file.", 201);
+
+    }
+
+    @RequestMapping("/addNavbar")
+    private @ResponseBody ResponseMessage addNavbar (){
+        ContainerTag ul = ul().withClass("nav navbar-nav");
+
+        ContainerTag nav = nav().with(
+            div().withClass("container").with(
+                div().with(
+                    ul
+                ).withClass("collapse navbar-collapse")
+            )
+        ).withClass("navbar navbar-default");
+
+        body.with(
+            nav
+        );
+
+        elements.put(0, nav);
+        elements.put(1, ul);
+
+        if (!updateFile())
+            return new ResponseMessage("Error creating HTML page", 500);
+
+        return new ResponseMessage("Successfully updated HTML file.", 201);
+    }
+
+    private String renderHtml(){
+        return document.render();
+    }
+
+    private void changeColorOfHeader(String objectColor){
+        body.with(
+            h1(objectColor).attr("style", "color:"+objectColor+";").withClass("example")
+        );
+
+        updateFile();
     }
 
     private void changeColorOfFooter(String objectColor){
