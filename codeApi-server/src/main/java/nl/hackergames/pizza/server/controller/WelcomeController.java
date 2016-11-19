@@ -77,7 +77,7 @@ public class WelcomeController {
 
         ContainerTag header = div().with(
                 h1("header")
-        ).withClass("jumbotron").attr("style", "margin-left:auto; margin-right:auto; width:1020px; height:200px;");
+        ).withClass("jumbotron").attr("style", "margin-left:auto; margin-right:auto; width:100%; height:200px;");
 
         ContainerTag content = p("content");
         ContainerTag container = div().with().withClass("container");
@@ -153,7 +153,7 @@ public class WelcomeController {
     @RequestMapping("/moveNavbar")
     private @ResponseBody ResponseMessage moveNavbar (String position) {
 
-        elements.get("nav").withClass("navbar navbar-default navbar-fixed-" + position);
+        elements.get("menu").withClass("navbar navbar-default navbar-fixed-" + position);
 
 
         if (!updateFile())
@@ -173,13 +173,13 @@ public class WelcomeController {
                     ul
                 ).withClass("collapse navbar-collapse")
             )
-        ).withClass("navbar navbar-default");
+        ).withClass("navbar navbar-default").attr("style", "margin-left:auto; margin-right:auto; width:100%; height:50px;");;
 
        body.with(
             nav
         );
 
-        elements.put("nav", nav);
+        elements.put("menu", nav);
         elements.put("ul", ul);
 
         if (!updateFile())

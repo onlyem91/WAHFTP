@@ -40,17 +40,17 @@ public class ObjectModifier {
         switch (value){
             case "smaller":
                 style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
-                width = between(style, "width:", "px; height");
+                width = between(style, "width:", "%; height");
 
-                style = style.replace("width:" + width + "px;", "width:" + (Integer.parseInt(width) - 100) + "px;");
+                style = style.replace("width:" + width + "%;", "width:" + (Integer.parseInt(width) - 10) + "%;");
                 elements.get(object).attr("style", style);
 
                 break;
             case "bigger":
                 style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
-                width = between(style, "width:", "px; height");
+                width = between(style, "width:", "%; height");
 
-                style = style.replace("width:" + width + "px;", "width:" + (Integer.parseInt(width) + 100) + "px;");
+                style = style.replace("width:" + width + "%;", "width:" + (Integer.parseInt(width) + 10) + "%;");
                 elements.get(object).attr("style", style);
 
                 break;
