@@ -1,7 +1,6 @@
 package nl.hackergames.pizza.server.controller;
 
 import j2html.tags.ContainerTag;
-import j2html.tags.Tag;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -35,11 +34,72 @@ public class ObjectModifier {
     }
 
     public void changeWidth(ContainerTag document, String object, String value){
+        String style = "";
+        String width = "";
 
+        switch (value){
+            case "smaller":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                width = between(style, "width:", "px; height");
+
+                style = style.replace("width:" + width + "px;", "width:" + (Integer.parseInt(width) - 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+            case "bigger":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                width = between(style, "width:", "px; height");
+
+                style = style.replace("width:" + width + "px;", "width:" + (Integer.parseInt(width) + 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+        }
+
+        renderDocument(document);
     }
 
     public void changeHeight(ContainerTag document, String object, String value){
+        String style = "";
+        String height = "";
 
+        switch (value){
+            case "smaller":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                height = between(style, "height:", "px;");
+
+                style = style.replace("height:" + height + "px;", "height:" + (Integer.parseInt(height) - 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+            case "bigger":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                height = between(style, "height:", "px;");
+
+                style = style.replace("height:" + height + "px;", "height:" + (Integer.parseInt(height) + 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+        }
+
+        renderDocument(document);
+    }
+
+    public static String between(String value, String a, String b) {
+        // Return a substring between the two strings.
+        int posA = value.indexOf(a);
+        if (posA == -1) {
+            return "";
+        }
+        int posB = value.lastIndexOf(b);
+        if (posB == -1) {
+            return "";
+        }
+        int adjustedPosA = posA + a.length();
+        if (adjustedPosA >= posB) {
+            return "";
+        }
+        return value.substring(adjustedPosA, posB);
     }
 
     public void changeAllignment(ContainerTag document, String object, String value) {
@@ -56,11 +116,7 @@ public class ObjectModifier {
                 case "center":
                     elements.get(object).attr("style", "margin-right:auto; margin-left:auto;");
 
-                    System.out.printf(elements.get(object).renderOpenTag());
-
-                    for (Tag t:elements.get(object).children) {
-                        System.out.println(t.toString());
-                    }
+                    String style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
 
                     break;
             }
