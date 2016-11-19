@@ -1,6 +1,9 @@
 package nl.hackergames.pizza.server.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.hackergames.pizza.common.ResponseMessage;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import static j2html.TagCreator.body;
 import static j2html.TagCreator.h1;
@@ -62,7 +66,19 @@ public class WelcomeController {
         } else {
             message = "Hello mysterious person";
         }
-        return new ResponseMessage(message, 201);
+
+        return new ResponseMessage("Successfully created HTML file.", 201);
+    }
+
+    @RequestMapping("/json")
+    public @ResponseBody ResponseMessage test(@RequestParam(required = true) String objectName) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        Classifier obj = mapper.readValue(objectName, Classifier.class);
+
+        sayHello("header", obj.getValue());
+
+        return new ResponseMessage("Message successfully redirected to method", 201);
     }
 
     @RequestMapping("/entry")
@@ -82,7 +98,6 @@ public class WelcomeController {
         return new ResponseMessage("Message successfully redirected to method", 201);
     }
 
-
     /*
      * METHODS OF NADIA & ROY
      */
@@ -91,7 +106,7 @@ public class WelcomeController {
     public @ResponseBody ResponseMessage init(){
 
         String html = body().with(
-                h1("WELCOME TO OUR PRITTY DEMO!").withClass("example")
+                h1("WELCOME TO OU DEMO!").withClass("example")
         ).render();
 
         Document doc = Jsoup.parseBodyFragment(html);
@@ -116,7 +131,27 @@ public class WelcomeController {
     }
 
     private void changeColorOfHeader(String objectColor){
-        // TODO
+        String html = body().with(
+                h1(objectColor).attr("style", "color:"+objectColor+";").withClass("example")
+        ).render();
+
+        Document doc = Jsoup.parseBodyFragment(html);
+
+        try{
+            File file = new File("index.html");
+            FileOutputStream fop = new FileOutputStream(file);
+
+            // get the content in bytes
+            byte[] contentInBytes = doc.html().getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+
+
+        }catch(Exception e){
+
+        }
     }
 
     private void changeColorOfFooter(String objectColor){
