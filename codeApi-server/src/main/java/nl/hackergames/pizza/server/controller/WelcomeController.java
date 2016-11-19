@@ -75,15 +75,22 @@ public class WelcomeController {
         head = head();
         document = html().with(head, body);
 
-        ContainerTag header = h1("header");
-        ContainerTag content = h2("content");
+        ContainerTag header = div().with(
+                h1("header")
+        ).withClass("jumbotron");
+
+        ContainerTag content = p("content");
+        ContainerTag container = div().with().withClass("container");
 
         elements.put("header", header);
         elements.put("content", content);
+        elements.put("container", container);
 
         body.with(
-                header,
-                content
+                container.with(
+                    header,
+                    content
+                ).attr("style", "margin-top:75px;")
         );
 
         head.with(
@@ -129,7 +136,7 @@ public class WelcomeController {
             liClass = "active";
         }
 
-        elements.get(1).with(
+        elements.get("ul").with(
             li().with(
                 a().withHref(url).withText(name)
             ).withClass(liClass)
@@ -146,7 +153,8 @@ public class WelcomeController {
     @RequestMapping("/moveNavbar")
     private @ResponseBody ResponseMessage moveNavbar (String position) {
 
-        elements.get(0).withClass("navbar navbar-default navbar-fixed-" + position);
+        elements.get("nav").withClass("navbar navbar-default navbar-fixed-" + position);
+
 
         if (!updateFile())
             return new ResponseMessage("Error creating HTML page", 500);
@@ -167,7 +175,7 @@ public class WelcomeController {
             )
         ).withClass("navbar navbar-default");
 
-        body.with(
+       body.with(
             nav
         );
 

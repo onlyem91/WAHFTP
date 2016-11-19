@@ -28,7 +28,7 @@ public class ObjectModifier {
             ContainerTag objectTag = elements.get(object);
 
             //set header with new value
-            objectTag.attr("style", "color:"+value+";");
+            objectTag.attr("style", "background-color:"+value+";");
 
             renderDocument(document);
     }
