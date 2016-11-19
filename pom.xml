@@ -29,7 +29,6 @@
 
   <modules>
     <module>codeApi-common</module>
-    <module>codeApi-client</module>
     <module>codeApi-server</module>
   </modules>
 </project>

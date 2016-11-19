@@ -5,15 +5,24 @@ package nl.hackergames.pizza.server.controller;
  */
 public class Classifier {
 
-    private String confidence;
     private String value;
+    private String object;
+    private String attribute;
 
-    public String getConfidence() {
-        return confidence;
+    public String getObject() {
+        return object;
     }
 
-    public void setConfidence(String confidence) {
-        this.confidence = confidence;
+    public void setObject(String object) {
+        this.object = object;
+    }
+
+    public String getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(String attribute) {
+        this.attribute = attribute;
     }
 
     public String getValue() {

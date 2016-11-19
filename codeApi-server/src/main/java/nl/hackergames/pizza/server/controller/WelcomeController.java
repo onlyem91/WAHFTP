@@ -1,9 +1,8 @@
 package nl.hackergames.pizza.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import j2html.tags.ContainerTag;
 import nl.hackergames.pizza.common.ResponseMessage;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -16,9 +15,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 
-import static j2html.TagCreator.body;
-import static j2html.TagCreator.h1;
+import static j2html.TagCreator.*;
+
 /**
  * SpringMVC Controller that lives on the server side and handles incoming HTTP requests. It is basically a servlet but
  * using the power of SpringMVC we can avoid a lot of the raw servlet and request/response mapping uglies that
@@ -30,66 +30,31 @@ public class WelcomeController {
 
     private static final Logger log = LoggerFactory.getLogger(WelcomeController.class);
 
-    private enum htmlObjects {
-        header, footer;
-    }
+    private ContainerTag head = head();
+    private ContainerTag body = body();
 
+    private ContainerTag document = html().with(head, body);
 
-    /**
-     * This method is exposed as a REST service. The @RequestMapping parameter tells Spring that when a request comes in
-     * to the server at the sub-url of '/welcome' (e.g. http://localhost:8080/codeApi-server/welcome)
-     * it should be directed to this method.
-     * <p/>
-     * In normal SpringMVC you would typically handle the request, attach some data to the 'Model' and redirect to a
-     * JSP for rendering. In our REST example however we want the result to be an XML response. Thanks to some Spring
-     * magic we can just return our bean, annotate it with @ResponseBody and Spring will magically turn this into XML
-     * for us.
-     * <p/>
-     * We really didn't need the whole ResponseMessage object here and could just have easily returned a String. That
-     * wouldn't have made a very good example though, so the ResponseMessage is here to show how Spring turns objects
-     * into XML and back again for easy REST calls. The 'date' parameter was added just to give it some spice.
-     *
-     * @param name the name of the person to say hello to. This is pulled from the input URL. In this case we use a
-     *             request parameter (i.e. ?name=someone), but you could also map it directly into the URL if you
-     *             prefer. See the very good SpringMVC documentation on this for more information.
-     * @return
-     */
-    @RequestMapping("/welcome")
-    public @ResponseBody
-    ResponseMessage sayHello(@RequestParam(required = false) String name) {
-
-        log.info("Saying hello to '{}'", name);
-
-        String message;
-        if (name != null && name.trim().length() > 0) {
-            message = "Hello " + name;
-        } else {
-            message = "Hello mysterious person";
-        }
-
-        return new ResponseMessage("Successfully created HTML file.", 201);
-    }
+    private HashMap<Integer, ContainerTag> elements = new HashMap<>();
 
     @RequestMapping("/json")
-    public @ResponseBody ResponseMessage test(@RequestParam(required = true) String objectName) throws IOException {
+    public @ResponseBody ResponseMessage determineMessage(@RequestParam(required = true) String objectName) throws IOException {
+
         ObjectMapper mapper = new ObjectMapper();
 
-        Classifier obj = mapper.readValue(objectName, Classifier.class);
+        Classifier classifier = mapper.readValue(objectName, Classifier.class);
 
-        sayHello("header", obj.getValue());
+        ObjectModifier objectModifier = new ObjectModifier(head, body, elements);
 
-        return new ResponseMessage("Message successfully redirected to method", 201);
-    }
-
-    @RequestMapping("/entry")
-    public @ResponseBody ResponseMessage sayHello(@RequestParam(required = true) String objectName, @RequestParam(required = true) String objectColor) {
-
-        switch (htmlObjects.valueOf(objectName)) {
-            case header:
-                changeColorOfHeader(objectColor);
+        switch (classifier.getAttribute()) {
+            case "color":
+                objectModifier.changeColor(document, classifier.getObject(), classifier.getValue());
                 break;
-            case footer:
-                changeColorOfFooter(objectColor);
+            case "width":
+                objectModifier.changeWidth(document, classifier.getObject(), classifier.getValue());
+                break;
+            case "height":
+                objectModifier.changeHeight(document, classifier.getObject(), classifier.getValue());
                 break;
             default:
                 break;
@@ -105,11 +70,18 @@ public class WelcomeController {
     @RequestMapping("/init")
     public @ResponseBody ResponseMessage init(){
 
-        String html = body().with(
-                h1("WELCOME TO OU DEMO!").withClass("example")
-        ).render();
+        ContainerTag header = h1("header");
+        ContainerTag content = h2("content");
 
-        Document doc = Jsoup.parseBodyFragment(html);
+        elements.put(0, header);
+        elements.put(1, content);
+
+        body.with(
+                header,
+                content
+        );
+
+        Document doc = Jsoup.parse(document.render());
 
         try{
             File file = new File("index.html");
@@ -130,31 +102,4 @@ public class WelcomeController {
         return new ResponseMessage("Successfully created HTML file.", 201);
     }
 
-    private void changeColorOfHeader(String objectColor){
-        String html = body().with(
-                h1(objectColor).attr("style", "color:"+objectColor+";").withClass("example")
-        ).render();
-
-        Document doc = Jsoup.parseBodyFragment(html);
-
-        try{
-            File file = new File("index.html");
-            FileOutputStream fop = new FileOutputStream(file);
-
-            // get the content in bytes
-            byte[] contentInBytes = doc.html().getBytes();
-
-            fop.write(contentInBytes);
-            fop.flush();
-            fop.close();
-
-
-        }catch(Exception e){
-
-        }
-    }
-
-    private void changeColorOfFooter(String objectColor){
-        // TODO
-    }
 }
