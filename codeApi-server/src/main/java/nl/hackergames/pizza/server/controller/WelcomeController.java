@@ -143,7 +143,7 @@ public class WelcomeController {
     @RequestMapping("/moveNavbar")
     private @ResponseBody ResponseMessage moveNavbar (String position) {
 
-        elements.get(0).withClass("navbar navbar-default navbar-fixed-top");
+        elements.get(0).withClass("navbar navbar-default navbar-fixed-" + position);
 
         if (!updateFile())
             return new ResponseMessage("Error creating HTML page", 500);
