@@ -34,18 +34,92 @@ public class ObjectModifier {
     }
 
     public void changeWidth(ContainerTag document, String object, String value){
+        String style = "";
+        String width = "";
 
+        switch (value){
+            case "smaller":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                width = between(style, "width:", "px; height");
+
+                style = style.replace("width:" + width + "px;", "width:" + (Integer.parseInt(width) - 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+            case "bigger":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                width = between(style, "width:", "px; height");
+
+                style = style.replace("width:" + width + "px;", "width:" + (Integer.parseInt(width) + 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+        }
+
+        renderDocument(document);
     }
 
     public void changeHeight(ContainerTag document, String object, String value){
+        String style = "";
+        String height = "";
 
+        switch (value){
+            case "smaller":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                height = between(style, "height:", "px;");
+
+                style = style.replace("height:" + height + "px;", "height:" + (Integer.parseInt(height) - 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+            case "bigger":
+                style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                height = between(style, "height:", "px;");
+
+                style = style.replace("height:" + height + "px;", "height:" + (Integer.parseInt(height) + 100) + "px;");
+                elements.get(object).attr("style", style);
+
+                break;
+        }
+
+        renderDocument(document);
+    }
+
+    public static String between(String value, String a, String b) {
+        // Return a substring between the two strings.
+        int posA = value.indexOf(a);
+        if (posA == -1) {
+            return "";
+        }
+        int posB = value.lastIndexOf(b);
+        if (posB == -1) {
+            return "";
+        }
+        int adjustedPosA = posA + a.length();
+        if (adjustedPosA >= posB) {
+            return "";
+        }
+        return value.substring(adjustedPosA, posB);
     }
 
     public void changeAllignment(ContainerTag document, String object, String value) {
         if("nav".equals(object)){
             elements.get(object).withClass("navbar navbar-default navbar-fixed-" + value);
         } else {
-            elements.get(object).attr("style", "position:absolute; width:inherit;" + value + ":0;");
+            switch (value) {
+                case "right":
+                    elements.get(object).attr("style", "margin-left:auto;");
+                    break;
+                case "left":
+                    elements.get(object).attr("style", "margin-right:auto;");
+                    break;
+                case "center":
+                    elements.get(object).attr("style", "margin-right:auto; margin-left:auto;");
+
+                    String style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+
+                    break;
+            }
         }
         renderDocument(document);
     }

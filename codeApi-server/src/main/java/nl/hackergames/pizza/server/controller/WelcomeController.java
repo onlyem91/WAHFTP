@@ -77,7 +77,7 @@ public class WelcomeController {
 
         ContainerTag header = div().with(
                 h1("header")
-        ).withClass("jumbotron");
+        ).withClass("jumbotron").attr("style", "margin-left:auto; margin-right:auto; width:1020px; height:200px;");
 
         ContainerTag content = p("content");
         ContainerTag container = div().with().withClass("container");
