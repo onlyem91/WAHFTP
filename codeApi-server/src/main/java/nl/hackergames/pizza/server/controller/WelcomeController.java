@@ -33,7 +33,7 @@ public class WelcomeController {
     private ContainerTag body = body();
 
     private ContainerTag document = html().with(head, body);
-    private HashMap<Integer, ContainerTag> elements = new HashMap<>();
+    private HashMap<String, ContainerTag> elements = new HashMap<>();
 
     @RequestMapping("/json")
     public @ResponseBody ResponseMessage determineMessage(@RequestParam(required = true) String objectName) throws IOException {
@@ -68,11 +68,15 @@ public class WelcomeController {
     @RequestMapping("/init")
     public @ResponseBody ResponseMessage init(){
 
+        body = body();
+        head = head();
+        document = html().with(head, body);
+
         ContainerTag header = h1("header");
         ContainerTag content = h2("content");
 
-        elements.put(0, header);
-        elements.put(1, content);
+        elements.put("header", header);
+        elements.put("content", content);
 
         body.with(
                 header,
@@ -164,8 +168,8 @@ public class WelcomeController {
             nav
         );
 
-        elements.put(0, nav);
-        elements.put(1, ul);
+        elements.put("nav", nav);
+        elements.put("ul", ul);
 
         if (!updateFile())
             return new ResponseMessage("Error creating HTML page", 500);

@@ -15,9 +15,9 @@ public class ObjectModifier {
 
     private ContainerTag body;
     private ContainerTag head;
-    private HashMap<Integer, ContainerTag> elements;
+    private HashMap<String, ContainerTag> elements;
 
-    public ObjectModifier(ContainerTag head, ContainerTag body, HashMap<Integer, ContainerTag> elements){
+    public ObjectModifier(ContainerTag head, ContainerTag body, HashMap<String, ContainerTag> elements){
         this.head = head;
         this.body = body;
         this.elements = elements;
@@ -25,8 +25,7 @@ public class ObjectModifier {
 
     public void changeColor(ContainerTag document, String object, String value){
             // get object from html (object)
-            ContainerTag objectTag = elements.get(0);
-            //body.with()
+            ContainerTag objectTag = elements.get(object);
 
             //set header with new value
             objectTag.attr("style", "color:"+value+";");
