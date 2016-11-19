@@ -30,21 +30,7 @@ public class ObjectModifier {
             //set header with new value
             objectTag.attr("style", "color:"+value+";");
 
-            Document doc = Jsoup.parse(document.render());
-
-            try{
-                File file = new File("index.html");
-                FileOutputStream fop = new FileOutputStream(file);
-
-                // get the content in bytes
-                byte[] contentInBytes = doc.html().getBytes();
-
-                fop.write(contentInBytes);
-                fop.flush();
-                fop.close();
-            }catch(Exception e){
-
-            }
+            renderDocument(document);
     }
 
     public void changeWidth(ContainerTag document, String object, String value){
@@ -55,5 +41,31 @@ public class ObjectModifier {
 
     }
 
+    public void changeAllignment(ContainerTag document, String object, String value) {
+        if("nav".equals(object)){
+            elements.get(object).withClass("navbar navbar-default navbar-fixed-" + value);
+        } else {
+            elements.get(object).attr("style", "position:absolute; width:inhert;" + value + ":0;");
+        }
+        renderDocument(document);
+    }
 
+
+    private void renderDocument(ContainerTag document){
+        Document doc = Jsoup.parse(document.render());
+
+        try{
+            File file = new File("index.html");
+            FileOutputStream fop = new FileOutputStream(file);
+
+            // get the content in bytes
+            byte[] contentInBytes = doc.html().getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+        }catch(Exception e){
+
+        }
+    }
 }

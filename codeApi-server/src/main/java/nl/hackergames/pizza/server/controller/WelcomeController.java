@@ -54,6 +54,9 @@ public class WelcomeController {
             case "height":
                 objectModifier.changeHeight(document, classifier.getObject(), classifier.getValue());
                 break;
+            case "allignment":
+                objectModifier.changeAllignment(document, classifier.getObject(), classifier.getValue());
+                break;
             default:
                 break;
         }
