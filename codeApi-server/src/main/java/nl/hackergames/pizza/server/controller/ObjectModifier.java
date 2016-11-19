@@ -1,6 +1,7 @@
 package nl.hackergames.pizza.server.controller;
 
 import j2html.tags.ContainerTag;
+import j2html.tags.Tag;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -45,7 +46,24 @@ public class ObjectModifier {
         if("nav".equals(object)){
             elements.get(object).withClass("navbar navbar-default navbar-fixed-" + value);
         } else {
-            elements.get(object).attr("style", "position:absolute; width:inherit;" + value + ":0;");
+            switch (value) {
+                case "right":
+                    elements.get(object).attr("style", "margin-left:auto;");
+                    break;
+                case "left":
+                    elements.get(object).attr("style", "margin-right:auto;");
+                    break;
+                case "center":
+                    elements.get(object).attr("style", "margin-right:auto; margin-left:auto;");
+
+                    System.out.printf(elements.get(object).renderOpenTag());
+
+                    for (Tag t:elements.get(object).children) {
+                        System.out.println(t.toString());
+                    }
+
+                    break;
+            }
         }
         renderDocument(document);
     }
