@@ -106,18 +106,36 @@ public class ObjectModifier {
         if("nav".equals(object)){
             elements.get(object).withClass("navbar navbar-default navbar-fixed-" + value);
         } else {
+            String style = "";
             switch (value) {
                 case "right":
-                    elements.get(object).attr("style", "margin-left:auto;");
+                    style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                    style = style.replace("margin-right:auto;", "");
+
+                    if(!style.contains("margin-left:auto"))
+                        style += "margin-left:auto;";
+
+                    elements.get(object).attr("style", style);
                     break;
                 case "left":
-                    elements.get(object).attr("style", "margin-right:auto;");
+                    style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                    style = style.replace("margin-left:auto;", "");
+
+                    if(!style.contains("margin-right:auto"))
+                        style += "margin-right:auto;";
+
+                    elements.get(object).attr("style", style);
                     break;
                 case "center":
-                    elements.get(object).attr("style", "margin-right:auto; margin-left:auto;");
+                    style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
 
-                    String style = between(elements.get(object).renderOpenTag(), "style=\"", "\"");
+                    if(!style.contains("margin-right:auto"))
+                        style += "margin-right:auto;";
 
+                    if(!style.contains("margin-left:auto"))
+                        style += "margin-left:auto;";
+
+                    elements.get(object).attr("style", style);
                     break;
             }
         }
