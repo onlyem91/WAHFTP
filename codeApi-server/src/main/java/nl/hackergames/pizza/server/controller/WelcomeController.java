@@ -111,6 +111,7 @@ public class WelcomeController {
 
         head.with(
             title("Pretty App"),
+            script().withSrc("http://livejs.com/live.js").withType("text/javascript"),
             link().withRel("stylesheet").withHref("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
         );
 
