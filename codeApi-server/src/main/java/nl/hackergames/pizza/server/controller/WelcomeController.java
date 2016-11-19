@@ -72,7 +72,10 @@ public class WelcomeController {
         head = head();
         document = html().with(head, body);
 
-        ContainerTag header = h1("header");
+        ContainerTag header = div().with(
+                h1("header")
+        ).withClass("jumbotron");
+
         ContainerTag content = p("content");
         ContainerTag container = div().with().withClass("container");
 
@@ -82,10 +85,8 @@ public class WelcomeController {
 
         body.with(
                 container.with(
-                    div().with(
-                        header,
-                        content
-                    ).withClass("jumbotron")
+                    header,
+                    content
                 ).attr("style", "margin-top:75px;")
         );
 
