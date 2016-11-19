@@ -45,7 +45,7 @@ public class ObjectModifier {
         if("nav".equals(object)){
             elements.get(object).withClass("navbar navbar-default navbar-fixed-" + value);
         } else {
-            elements.get(object).attr("style", "position:absolute; width:inhert;" + value + ":0;");
+            elements.get(object).attr("style", "position:absolute; width:inherit;" + value + ":0;");
         }
         renderDocument(document);
     }
