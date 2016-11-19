@@ -68,6 +68,10 @@ public class WelcomeController {
     @RequestMapping("/init")
     public @ResponseBody ResponseMessage init(){
 
+        body = body();
+        head = head();
+        document = html().with(body, head);
+
         ContainerTag header = h1("header");
         ContainerTag content = h2("content");
 
@@ -139,7 +143,7 @@ public class WelcomeController {
     @RequestMapping("/moveNavbar")
     private @ResponseBody ResponseMessage moveNavbar (String position) {
 
-        elements.get(0).withClass("navbar navbar-default navbar-fixed-top");
+        elements.get(0).withClass("navbar navbar-default navbar-fixed-" + position);
 
         if (!updateFile())
             return new ResponseMessage("Error creating HTML page", 500);
